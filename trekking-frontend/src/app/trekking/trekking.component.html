@@ -1,0 +1,9 @@
+<h2>Trekking List :</h2>
+<ul class="trekkings">
+    <li *ngFor="let trekking of trekkings">
+        <a routerLink="/detail/{{trekking.trekId}}">
+            <span class="detail">{{trekking.trekId}}. </span>{{trekking.trekName}}
+        </a>
+    </li>
+</ul>
+<button class="trekkings" routerLink="/create">create</button>

@@ -1,0 +1,32 @@
+<h3>Create Trekking Data:</h3>
+<div>
+    <div>
+        <span> Trek Name: </span>
+        <input [(ngModel)]="trekking.trekName" placeholder="trekName" />
+    </div>
+    <br />
+    <div>
+        <span> Trek Desc: </span>
+        <input [(ngModel)]="trekking.trekDesc" placeholder="trekDesc" />
+    </div>
+    <br />
+    <div>
+        <span> Trek Price: </span>
+        <input [(ngModel)]="trekking.trekPrice" placeholder="trekPrice" />
+    </div>
+    <br />
+    <div>
+        <span> Trek EndTime: </span>
+        <input [(ngModel)]="trekking.trekStartTime" placeholder="startTime" />
+    </div>
+    <br />
+    <div>
+        <span> Trek StartTime: </span>
+        <input [(ngModel)]="trekking.trekEndTime" placeholder="endTime" />
+    </div>
+    <div>
+        <br />
+        <button (click)="goBack()">go back</button>
+        <button (click)="createTrekkingData()">save</button>
+    </div>
+</div>
