@@ -9,6 +9,6 @@ import lombok.ToString;
 @ToString
 public class BaseResponse {
 
-	private String responseCode;
+	private int responseCode;
 	private String responseMessage;
 }

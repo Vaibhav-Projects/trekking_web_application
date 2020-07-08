@@ -6,11 +6,11 @@ import com.trekking.service.response.TrekkingResponse;
 
 public interface TrekkingService {
 
-	public TrekkingResponse getTrekkingDetails(boolean all, String id);
+	public TrekkingResponse getTrekkingDetails(TrekkingRequest request);
 
 	public BaseResponse createTrekkingDetail(TrekkingRequest request);
 
 	public BaseResponse updateTrekkingDetail(TrekkingRequest request);
 
-	public BaseResponse deleteTrekkingDetail(String id);
+	public BaseResponse deleteTrekkingDetail(TrekkingRequest request);
 }

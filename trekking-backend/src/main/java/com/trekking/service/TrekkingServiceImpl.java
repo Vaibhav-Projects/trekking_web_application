@@ -1,52 +1,73 @@
 package com.trekking.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.trekking.delegator.TrekkingDelegator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.trekking.constant.TrekkingConstants;
+import com.trekking.dao.TrekkingDAO;
 import com.trekking.service.request.TrekkingRequest;
 import com.trekking.service.response.BaseResponse;
 import com.trekking.service.response.TrekkingResponse;
+import com.trekking.utils.TrekkingUtils;
+import com.trekking.validator.TrekkingRequestValidator;
+import com.trekking.vo.Trekking;
 
-@CrossOrigin(origins = "*")
-@RestController
-@RequestMapping(value = "/trekkings", produces = "application/json", consumes = "application/json")
+@Component
 public class TrekkingServiceImpl implements TrekkingService {
 
 	@Autowired
-	TrekkingDelegator trekkingDelegator;
+	TrekkingDAO trekkingDAO;
 
-	@Override
-	@GetMapping
-	public TrekkingResponse getTrekkingDetails(@RequestParam(required = false) boolean all,
-			@RequestParam(required = false) String id) {
-		return trekkingDelegator.getTrekkingDetails(all, id);
+	@Autowired
+	TrekkingUtils trekkingUtils;
+
+	@Autowired
+	TrekkingRequestValidator requestValidator;
+
+	public TrekkingResponse getTrekkingDetails(TrekkingRequest request) {
+		TrekkingResponse response = new TrekkingResponse();
+		List<Trekking> trekkings = new ArrayList<Trekking>();
+		requestValidator.validateRequest(request);
+		if (request.getRequestType() == TrekkingConstants.REQUEST_TYPE_ALL) {
+			trekkings = trekkingDAO.getAllTrekkingDetails();
+			response.setTrekkings(trekkings);
+		}
+		if (request.getRequestType() == TrekkingConstants.REQUEST_TYPE_ID) {
+			Trekking trekking = trekkingDAO.getTrekkingDetailById(request.getTrekking().getTrekId());
+			trekkings.add(trekking);
+			response.setTrekkings(trekkings);
+		}
+		trekkingUtils.populateReturnCodes(response, false, false, true);
+		return response;
 	}
 
-	@Override
-	@PostMapping
-	public BaseResponse createTrekkingDetail(@RequestBody TrekkingRequest request) {
-		return trekkingDelegator.createTrekkingDetail(request);
+	public BaseResponse createTrekkingDetail(TrekkingRequest request) {
+		BaseResponse response = new BaseResponse();
+		requestValidator.validateRequest(request);
+		if (trekkingDAO.checkIfTrekkingDataExists(request.getTrekking().getTrekName()) > 0) {
+			trekkingUtils.populateReturnCodes(response, true, false, false);
+			return response;
+		}
+		int result = trekkingDAO.createTrekkingDetail(request);
+		trekkingUtils.populateReturnCodes(response, false, false, result == 1);
+		return response;
 	}
 
-	@Override
-	@PutMapping
-	public BaseResponse updateTrekkingDetail(@RequestBody TrekkingRequest request) {
-		return trekkingDelegator.updateTrekkingDetail(request);
-
+	public BaseResponse updateTrekkingDetail(TrekkingRequest request) {
+		BaseResponse response = new BaseResponse();
+		requestValidator.validateRequest(request);
+		int result = trekkingDAO.updateTrekkingDetail(request);
+		trekkingUtils.populateReturnCodes(response, false, false, result == 1);
+		return response;
 	}
 
-	@Override
-	@DeleteMapping
-	public BaseResponse deleteTrekkingDetail(@RequestParam String id) {
-		return trekkingDelegator.deleteTrekkingDetail(id);
+	public BaseResponse deleteTrekkingDetail(TrekkingRequest request) {
+		BaseResponse response = new BaseResponse();
+		int result = trekkingDAO.deleteTrekkingDetail(request.getTrekking().getTrekId());
+		trekkingUtils.populateReturnCodes(response, false, false, result == 1);
+		return response;
 	}
 }
